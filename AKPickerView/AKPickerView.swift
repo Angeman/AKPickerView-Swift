@@ -448,6 +448,7 @@ public class AKPickerView: UIView, UICollectionViewDataSource, UICollectionViewD
 	:param: animated True if the scrolling should be animated, false if it should be immediate.
 	*/
 	public func scrollToItem(_ item: Int, animated: Bool = false) {
+		self.previousCenterItem = item
 		switch self.pickerViewStyle {
 		case .flat:
 			self.collectionView.scrollToItem(
@@ -613,7 +614,7 @@ public class AKPickerView: UIView, UICollectionViewDataSource, UICollectionViewD
 	public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
 		self.delegate?.scrollViewWillBeginDragging?(scrollView)
 		if #available(iOS 10.0, *) {
-			let feedbackGenerator = UISelectionFeedbackGenerator()
+			let feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
 			objc_setAssociatedObject(self, &selectionFeedbackGeneratorHandle, feedbackGenerator, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
 			feedbackGenerator.prepare()
 		}
@@ -639,8 +640,8 @@ public class AKPickerView: UIView, UICollectionViewDataSource, UICollectionViewD
 		// Check if center item has changed
 		if let centerItem = self.centerItem, self.previousCenterItem != centerItem {
 			if #available(iOS 10.0, *) {
-				let feedbackGenerator = objc_getAssociatedObject(self, &selectionFeedbackGeneratorHandle) as? UISelectionFeedbackGenerator
-				feedbackGenerator?.selectionChanged()
+				let feedbackGenerator = objc_getAssociatedObject(self, &selectionFeedbackGeneratorHandle) as? UIImpactFeedbackGenerator
+				feedbackGenerator?.impactOccurred()
 				feedbackGenerator?.prepare()
 			}
 			AudioServicesPlaySystemSound(AKPickerView.selectionChangedAlertSoundID)
