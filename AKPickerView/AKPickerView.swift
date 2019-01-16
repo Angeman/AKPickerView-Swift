@@ -638,12 +638,12 @@ public class AKPickerView: UIView, UICollectionViewDataSource, UICollectionViewD
 		
 		// Check if center item has changed
 		if let centerItem = self.centerItem, self.previousCenterItem != centerItem {
-			AudioServicesPlayAlertSound(AKPickerView.selectionChangedAlertSoundID)
 			if #available(iOS 10.0, *) {
 				let feedbackGenerator = objc_getAssociatedObject(self, &selectionFeedbackGeneratorHandle) as? UISelectionFeedbackGenerator
 				feedbackGenerator?.selectionChanged()
 				feedbackGenerator?.prepare()
 			}
+			AudioServicesPlaySystemSound(AKPickerView.selectionChangedAlertSoundID)
 			self.previousCenterItem = centerItem
 		}
 	}
