@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AudioToolbox
 
 /**
 Styles of AKPickerView.
@@ -220,6 +221,9 @@ private class AKPickerViewDelegateIntercepter: NSObject, UICollectionViewDelegat
 
 }
 
+/// Private. Unique address to get selectionFeedbackGenerator on iOS 10+
+private var selectionFeedbackGeneratorHandle: UInt8 = 0
+
 // MARK: - AKPickerView
 // TODO: Make these delegate conformation private
 /**
@@ -305,7 +309,19 @@ public class AKPickerView: UIView, UICollectionViewDataSource, UICollectionViewD
 		layout.delegate = self
 		return layout
 	}
-
+	/// Private. Index of the item that was previously in center.
+	fileprivate var previousCenterItem: Int = 0
+	/// Private. Sound to play when the selection changes.
+	private static let selectionChangedAlertSoundID: SystemSoundID = {
+		if let url = Bundle(for: AKPickerView.self).url(forResource: "SelectionChanged", withExtension: "caf") {
+			var soundID: SystemSoundID = 0
+			AudioServicesCreateSystemSoundID(url as CFURL, &soundID)
+			return soundID
+		} else {
+			fatalError()
+		}
+	}()
+	
 	// MARK: - Functions
 	// MARK: View Lifecycle
 	/**
@@ -478,16 +494,17 @@ public class AKPickerView: UIView, UICollectionViewDataSource, UICollectionViewD
 		}
 	}
 
-	// MARK: Delegate Handling
 	/**
-	Private.
+	Private. Return the item that is currently in center.
+	
+	:returns: The index of the item that is currently in center.
 	*/
-	fileprivate func didEndScrolling() {
+	fileprivate var centerItem: Int? {
 		switch self.pickerViewStyle {
 		case .flat:
 			let center = self.convert(self.collectionView.center, to: self.collectionView)
 			if let indexPath = self.collectionView.indexPathForItem(at: center) {
-				self.selectItem(indexPath.item, animated: true, notifySelection: true)
+				return indexPath.item
 			}
 		case .wheel:
 			if let numberOfItems = self.dataSource?.numberOfItemsInPickerView(self) {
@@ -498,11 +515,21 @@ public class AKPickerView: UIView, UICollectionViewDataSource, UICollectionViewD
 						layout: self.collectionView.collectionViewLayout,
 						sizeForItemAt: indexPath)
 					if self.offsetForItem(i) + cellSize.width / 2 > self.collectionView.contentOffset.x {
-						self.selectItem(i, animated: true, notifySelection: true)
-						break
+						return i
 					}
 				}
 			}
+		}
+		return nil
+	}
+	
+	// MARK: Delegate Handling
+	/**
+	Private.
+	*/
+	fileprivate func didEndScrolling() {
+		if let item = self.centerItem {
+			self.selectItem(item, animated: true, notifySelection: true)
 		}
 	}
 
@@ -583,8 +610,20 @@ public class AKPickerView: UIView, UICollectionViewDataSource, UICollectionViewD
 		self.didEndScrolling()
 	}
 
+	public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+		self.delegate?.scrollViewWillBeginDragging?(scrollView)
+		if #available(iOS 10.0, *) {
+			let feedbackGenerator = UISelectionFeedbackGenerator()
+			objc_setAssociatedObject(self, &selectionFeedbackGeneratorHandle, feedbackGenerator, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+			feedbackGenerator.prepare()
+		}
+	}
+	
 	public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
 		self.delegate?.scrollViewDidEndDragging?(scrollView, willDecelerate: decelerate)
+		if #available(iOS 10.0, *) {
+			objc_setAssociatedObject(self, &selectionFeedbackGeneratorHandle, nil, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+		}
 		if !decelerate {
 			self.didEndScrolling()
 		}
@@ -596,6 +635,17 @@ public class AKPickerView: UIView, UICollectionViewDataSource, UICollectionViewD
 		CATransaction.setValue(kCFBooleanTrue, forKey: kCATransactionDisableActions)
 		self.collectionView.layer.mask?.frame = self.collectionView.bounds
 		CATransaction.commit()
+		
+		// Check if center item has changed
+		if let centerItem = self.centerItem, self.previousCenterItem != centerItem {
+			AudioServicesPlayAlertSound(AKPickerView.selectionChangedAlertSoundID)
+			if #available(iOS 10.0, *) {
+				let feedbackGenerator = objc_getAssociatedObject(self, &selectionFeedbackGeneratorHandle) as? UISelectionFeedbackGenerator
+				feedbackGenerator?.selectionChanged()
+				feedbackGenerator?.prepare()
+			}
+			self.previousCenterItem = centerItem
+		}
 	}
 
 	// MARK: AKCollectionViewLayoutDelegate

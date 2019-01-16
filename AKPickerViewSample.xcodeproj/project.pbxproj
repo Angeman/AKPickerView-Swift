@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		66A74BA21A95074E009AB290 /* AKPickerView-Swift.podspec in Resources */ = {isa = PBXBuildFile; fileRef = 66A74BA11A95074E009AB290 /* AKPickerView-Swift.podspec */; };
+		38FFAEC221EF4EC600E4FA93 /* SelectionChanged.caf in Resources */ = {isa = PBXBuildFile; fileRef = 38FFAEC121EF4EC600E4FA93 /* SelectionChanged.caf */; };
 		66C001461AD380FC005F2650 /* AKPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F602881A8A16E60006FA7E /* AKPickerView.swift */; };
 		66F602671A8A167C0006FA7E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F602661A8A167C0006FA7E /* AppDelegate.swift */; };
 		66F602691A8A167C0006FA7E /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F602681A8A167C0006FA7E /* ViewController.swift */; };
@@ -19,6 +19,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		38FFAEC121EF4EC600E4FA93 /* SelectionChanged.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = SelectionChanged.caf; path = Assets/SelectionChanged.caf; sourceTree = "<group>"; };
 		66A74BA11A95074E009AB290 /* AKPickerView-Swift.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "AKPickerView-Swift.podspec"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		66F602611A8A167C0006FA7E /* AKPickerViewSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AKPickerViewSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		66F602651A8A167C0006FA7E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -96,6 +97,7 @@
 			children = (
 				66F602931A8A17220006FA7E /* AKPickerView.h */,
 				66F602881A8A16E60006FA7E /* AKPickerView.swift */,
+				38FFAEC121EF4EC600E4FA93 /* SelectionChanged.caf */,
 				66F602911A8A17220006FA7E /* Supporting Files */,
 			);
 			path = AKPickerView;
@@ -203,7 +205,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				66F6026C1A8A167C0006FA7E /* Main.storyboard in Resources */,
-				66A74BA21A95074E009AB290 /* AKPickerView-Swift.podspec in Resources */,
 				66F602711A8A167C0006FA7E /* LaunchScreen.xib in Resources */,
 				66F6026E1A8A167C0006FA7E /* Images.xcassets in Resources */,
 			);
@@ -213,6 +214,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				38FFAEC221EF4EC600E4FA93 /* SelectionChanged.caf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
