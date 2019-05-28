@@ -63,7 +63,7 @@ private class AKCollectionViewCell: UICollectionViewCell {
 	var _selected: Bool = false {
 		didSet(selected) {
 			let animation = CATransition()
-			animation.type = kCATransitionFade
+			animation.type = .fade
 			animation.duration = 0.15
 			self.label.layer.add(animation, forKey: "")
 			self.label.font = self.isSelected ? self.highlightedFont : self.font
@@ -120,7 +120,7 @@ private class AKCollectionViewLayout: UICollectionViewFlowLayout {
 	var maxAngle: CGFloat!
 
 	func initialize() {
-		self.sectionInset = UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)
+		self.sectionInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
 		self.scrollDirection = .horizontal
 		self.minimumLineSpacing = 0.0
 	}
@@ -159,7 +159,7 @@ private class AKCollectionViewLayout: UICollectionViewFlowLayout {
 				transform = CATransform3DRotate(transform, currentAngle, 0, 1, 0);
 				transform = CATransform3DTranslate(transform, 0, 0, self.width);
 				attributes.transform3D = transform;
-				attributes.alpha = fabs(currentAngle) < self.maxAngle ? 1.0 : 0.0;
+				attributes.alpha = abs(currentAngle) < self.maxAngle ? 1.0 : 0.0;
 				return attributes;
 			}
 		}
@@ -332,8 +332,8 @@ public class AKPickerView: UIView, UICollectionViewDataSource, UICollectionViewD
 		self.collectionView = UICollectionView(frame: self.bounds, collectionViewLayout: self.collectionViewLayout)
 		self.collectionView.showsHorizontalScrollIndicator = false
 		self.collectionView.backgroundColor = UIColor.clear
-		self.collectionView.decelerationRate = UIScrollViewDecelerationRateFast
-		self.collectionView.autoresizingMask = [UIViewAutoresizing.flexibleWidth, UIViewAutoresizing.flexibleHeight]
+		self.collectionView.decelerationRate = .fast
+		self.collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 		self.collectionView.dataSource = self
 		self.collectionView.register(
 			AKCollectionViewCell.self,
@@ -377,7 +377,7 @@ public class AKPickerView: UIView, UICollectionViewDataSource, UICollectionViewD
 	}
 
 	open override var intrinsicContentSize : CGSize {
-		return CGSize(width: UIViewNoIntrinsicMetric, height: max(self.font.lineHeight, self.highlightedFont.lineHeight))
+		return CGSize(width: UIView.noIntrinsicMetric, height: max(self.font.lineHeight, self.highlightedFont.lineHeight))
 	}
 
 	// MARK: Calculation Functions
@@ -389,8 +389,8 @@ public class AKPickerView: UIView, UICollectionViewDataSource, UICollectionViewD
 	:returns: A CGSize which contains given string just.
 	*/
 	fileprivate func sizeForString(_ string: NSString) -> CGSize {
-		let size = string.size(withAttributes: [NSAttributedStringKey.font: self.font])
-		let highlightedSize = string.size(withAttributes: [NSAttributedStringKey.font: self.highlightedFont])
+		let size = string.size(withAttributes: [.font: self.font])
+		let highlightedSize = string.size(withAttributes: [.font: self.highlightedFont])
 		return CGSize(
 			width: ceil(max(size.width, highlightedSize.width)),
 			height: ceil(max(size.height, highlightedSize.height)))
@@ -487,7 +487,7 @@ public class AKPickerView: UIView, UICollectionViewDataSource, UICollectionViewD
 		self.collectionView.selectItem(
 			at: IndexPath(item: item, section: 0),
 			animated: animated,
-			scrollPosition: UICollectionViewScrollPosition())
+			scrollPosition: [])
 		self.scrollToItem(item, animated: animated)
 		self.selectedItem = item
 		if notifySelection {
@@ -594,9 +594,9 @@ public class AKPickerView: UIView, UICollectionViewDataSource, UICollectionViewD
 		let firstSize = self.collectionView(collectionView, layout: collectionView.collectionViewLayout, sizeForItemAt: firstIndexPath)
 		let lastIndexPath = IndexPath(item: number - 1, section: section)
 		let lastSize = self.collectionView(collectionView, layout: collectionView.collectionViewLayout, sizeForItemAt: lastIndexPath)
-		return UIEdgeInsetsMake(
-			0, (collectionView.bounds.size.width - firstSize.width) / 2,
-			0, (collectionView.bounds.size.width - lastSize.width) / 2
+		return UIEdgeInsets(
+			top: 0, left: (collectionView.bounds.size.width - firstSize.width) / 2,
+			bottom: 0, right: (collectionView.bounds.size.width - lastSize.width) / 2
 		)
 	}
 
